@@ -1,3 +1,15 @@
+## v1.5.0
+
+[v1.4.0...v1.5.0](https://github.com/Jannchie/ruff-ignore-explainer/compare/v1.4.0...v1.5.0)
+
+### :sparkles: Features
+
+- **extension**: support ruff extend-ignore and extend-per-file-ignores - By [Jannchie](mailto:jannchie@gmail.com) in [afe669b](https://github.com/Jannchie/ruff-ignore-explainer/commit/afe669b)
+
+### :wrench: Chores
+
+- **deps**: downgrade @types/vscode version - By [Jianqi Pan](mailto:jannchie@gmail.com) in [ba51bfd](https://github.com/Jannchie/ruff-ignore-explainer/commit/ba51bfd)
+
 ## v1.4.0
 
 [v1.3.0...v1.4.0](https://github.com/Jannchie/ruff-ignore-explainer/compare/v1.3.0...v1.4.0)
