@@ -132,6 +132,7 @@ async function updateDecorations(editor: vscode.TextEditor) {
     const fixableRules = ruffConfig.fixable || []
     const unfixableRules = ruffConfig.unfixable || []
     const extendSelectRules = ruffConfig['extend-select'] || []
+    const extendIgnoreRules = ruffConfig['extend-ignore'] || []
 
     // Check lint section
     const lintIgnoreRules = ruffConfig.lint?.ignore || []
@@ -139,12 +140,17 @@ async function updateDecorations(editor: vscode.TextEditor) {
     const lintFixableRules = ruffConfig.lint?.fixable || []
     const lintUnfixableRules = ruffConfig.lint?.unfixable || []
     const lintExtendSelectRules = ruffConfig.lint?.['extend-select'] || []
+    const lintExtendIgnoreRules = ruffConfig.lint?.['extend-ignore'] || []
+    const lintExtendFixableRules = ruffConfig.lint?.['extend-fixable'] || []
+    const lintExtendUnfixableRules = ruffConfig.lint?.['extend-unfixable'] || []
 
     // Check per-file-ignores section
     const perFileIgnores = ruffConfig['per-file-ignores'] || {}
+    const extendPerFileIgnores = ruffConfig['extend-per-file-ignores'] || {}
 
     // Check lint.per-file-ignores section
     const lintPerFileIgnores = ruffConfig.lint?.['per-file-ignores'] || {}
+    const lintExtendPerFileIgnores = ruffConfig.lint?.['extend-per-file-ignores'] || {}
 
     // Extract all rules from per-file-ignores sections
     let perFileIgnoreRules: string[] = []
@@ -156,10 +162,24 @@ async function updateDecorations(editor: vscode.TextEditor) {
       }
     }
 
+    // Process extend-per-file-ignores
+    for (const filePattern in extendPerFileIgnores) {
+      if (Array.isArray(extendPerFileIgnores[filePattern])) {
+        perFileIgnoreRules = [...perFileIgnoreRules, ...extendPerFileIgnores[filePattern]]
+      }
+    }
+
     // Process lint.per-file-ignores
     for (const filePattern in lintPerFileIgnores) {
       if (Array.isArray(lintPerFileIgnores[filePattern])) {
         perFileIgnoreRules = [...perFileIgnoreRules, ...lintPerFileIgnores[filePattern]]
+      }
+    }
+
+    // Process lint.extend-per-file-ignores
+    for (const filePattern in lintExtendPerFileIgnores) {
+      if (Array.isArray(lintExtendPerFileIgnores[filePattern])) {
+        perFileIgnoreRules = [...perFileIgnoreRules, ...lintExtendPerFileIgnores[filePattern]]
       }
     }
 
@@ -168,9 +188,13 @@ async function updateDecorations(editor: vscode.TextEditor) {
       ...ignoreRules,
       ...selectRules,
       ...extendSelectRules,
+      ...extendIgnoreRules,
       ...lintIgnoreRules,
       ...lintSelectRules,
       ...lintExtendSelectRules,
+      ...lintExtendIgnoreRules,
+      ...lintExtendFixableRules,
+      ...lintExtendUnfixableRules,
       ...perFileIgnoreRules,
       ...fixableRules,
       ...lintFixableRules,
