@@ -1,0 +1,89 @@
+name: Update Ruff Rules
+
+on:
+  schedule:
+    # 每周一 03:00 UTC 检查一次 ruff 是否有新规则
+    - cron: '0 3 * * 1'
+  workflow_dispatch:
+    inputs:
+      force_publish:
+        description: 'Publish even if the rules dataset is unchanged'
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+concurrency:
+  group: update-rules
+  cancel-in-progress: false
+
+jobs:
+  update-and-release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: astral-sh/setup-uv@v5
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Regenerate rules dataset
+        run: |
+          node scripts/generate-rules.mjs
+          echo "RUFF_VERSION=$(uvx ruff --version | awk '{print $2}')" >> "$GITHUB_ENV"
+
+      - name: Detect changes
+        id: diff
+        run: |
+          if git diff --quiet src/rules.ts; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "No rule changes (ruff $RUFF_VERSION)."
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+            git diff --stat src/rules.ts
+          fi
+
+      - name: Lint and build
+        if: steps.diff.outputs.changed == 'true' || inputs.force_publish
+        run: |
+          pnpm run lint
+          pnpm run compile
+
+      - name: Bump version, commit and tag
+        if: steps.diff.outputs.changed == 'true' || inputs.force_publish
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          VERSION=$(npm version patch --no-git-tag-version)
+          echo "VERSION=$VERSION" >> "$GITHUB_ENV"
+          git add src/rules.ts package.json
+          git commit -m "chore(rules): update rules dataset for ruff $RUFF_VERSION"
+          git tag "$VERSION"
+          git push origin HEAD --follow-tags
+
+      - name: Package extension
+        if: steps.diff.outputs.changed == 'true' || inputs.force_publish
+        run: pnpm vsce package --no-dependencies
+
+      - name: Publish to VS Code Marketplace
+        if: steps.diff.outputs.changed == 'true' || inputs.force_publish
+        run: pnpm vsce publish --no-dependencies -p "$VSCE_PAT"
+        env:
+          VSCE_PAT: ${{ secrets.VSCE_PAT }}
+
+      - name: Create GitHub release
+        if: steps.diff.outputs.changed == 'true' || inputs.force_publish
+        run: gh release create "$VERSION" ./*.vsix --title "$VERSION" --notes "Update rules dataset for ruff $RUFF_VERSION."
+        env:
+          GH_TOKEN: ${{ github.token }}
