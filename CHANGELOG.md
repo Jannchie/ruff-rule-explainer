@@ -1,3 +1,11 @@
+## v1.5.1
+
+[v1.5.0...v1.5.1](https://github.com/Jannchie/ruff-rule-explainer/compare/v1.5.0...v1.5.1)
+
+### :wrench: Chores
+
+- **ci**: publish extension to marketplace on tag push - By [Jannchie](mailto:jannchie@gmail.com) in [8ef988f](https://github.com/Jannchie/ruff-rule-explainer/commit/8ef988f)
+
 ## v1.5.0
 
 [v1.4.0...v1.5.0](https://github.com/Jannchie/ruff-ignore-explainer/compare/v1.4.0...v1.5.0)
