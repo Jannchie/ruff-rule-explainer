@@ -1,3 +1,15 @@
+## v1.6.0
+
+[v1.5.1...v1.6.0](https://github.com/Jannchie/ruff-rule-explainer/compare/v1.5.1...v1.6.0)
+
+### :sparkles: Features
+
+- **extension**: explain partial rule selectors such as E4, PL and ALL - By [Jannchie](mailto:jannchie@gmail.com) in [31ad80c](https://github.com/Jannchie/ruff-rule-explainer/commit/31ad80c)
+
+### :adhesive_bandage: Fixes
+
+- **extension**: anchor inline hint to its rule code in single-line arrays - By [Jannchie](mailto:jannchie@gmail.com) in [692c23b](https://github.com/Jannchie/ruff-rule-explainer/commit/692c23b)
+
 ## v1.5.1
 
 [v1.5.0...v1.5.1](https://github.com/Jannchie/ruff-rule-explainer/compare/v1.5.0...v1.5.1)
