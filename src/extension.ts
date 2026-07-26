@@ -1,20 +1,12 @@
-import type { RuffRule } from './rules'
 import * as toml from '@iarna/toml'
 import * as vscode from 'vscode'
 import { hintPlacement } from './placement'
-import { prefixToLinterMap, rules } from './rules'
+import { resolveSelector } from './selector'
 
 // Define decoration type
 let ruleDecorator: vscode.TextEditorDecorationType
 
 const outputChannel = vscode.window.createOutputChannel('Ruff Ignore Explainer')
-
-function kebabToTitleCase(str: string): string {
-  return str
-    .replaceAll('-', ' ')
-    .toLowerCase()
-    .replaceAll(/\b\w/g, char => char.toUpperCase())
-}
 
 // Activate extension
 export function activate(context: vscode.ExtensionContext) {
@@ -44,22 +36,14 @@ export function activate(context: vscode.ExtensionContext) {
 
       // Extract the rule code from the text (removing quotes)
       const text = document.getText(range)
-      const ruleCode = text.replaceAll(/["']/g, '')
+      const selector = text.replaceAll(/["']/g, '')
 
-      // Find the rule information
-      const rule = findRule(ruleCode)
-      if (rule) {
-        // Return hover with markdown explanation
-        return new vscode.Hover(new vscode.MarkdownString(rule.explanation), range)
+      const resolved = resolveSelector(selector)
+      if (!resolved) {
+        return null
       }
 
-      // If rule not found but recognized as a linter prefix
-      const linter = prefixToLinterMap.get(ruleCode)
-      if (linter) {
-        return new vscode.Hover(`${linter} (No detailed explanation available)`, range)
-      }
-
-      return null
+      return new vscode.Hover(new vscode.MarkdownString(resolved.detail), range)
     },
   })
 
@@ -206,30 +190,29 @@ async function updateDecorations(editor: vscode.TextEditor) {
     // Create decoration objects array
     const decorations: vscode.DecorationOptions[] = []
 
-    // For each rule in the combined list, find ALL occurrences in the document
-    for (const rule of allRules) {
-      // Find all instances of rule in document (with quotes)
-      const rulePattern = new RegExp(`["']${rule}["']`, 'g')
+    // For each selector in the combined list, find ALL occurrences in the document
+    for (const selector of allRules) {
+      if (typeof selector !== 'string' || !/^[A-Z]+\d*$/.test(selector)) {
+        continue
+      }
+
+      const resolved = resolveSelector(selector)
+      if (!resolved) {
+        continue
+      }
+
+      // Find all instances of the selector in document (with quotes)
+      const rulePattern = new RegExp(`["']${selector}["']`, 'g')
 
       for (let i = 0; i < document.lineCount; i++) {
         const line = document.lineAt(i)
         const lineText = line.text
 
-        // Look for matches of the rule in this line
+        // Look for matches of the selector in this line
         const matches = [...lineText.matchAll(rulePattern)]
 
         for (const match of matches) {
           if (match.index === undefined) {
-            continue
-          }
-
-          const ruleInfo = findRule(rule)
-          const linter = prefixToLinterMap.get(rule)
-          const label = ruleInfo
-            ? kebabToTitleCase(ruleInfo.name)
-            : (linter ? kebabToTitleCase(linter) : '')
-
-          if (!label) {
             continue
           }
 
@@ -240,10 +223,10 @@ async function updateDecorations(editor: vscode.TextEditor) {
             range: new vscode.Range(position, position),
             renderOptions: {
               after: {
-                contentText: padRight ? ` ${label} ` : ` ${label}`,
+                contentText: padRight ? ` ${resolved.label} ` : ` ${resolved.label}`,
               },
             },
-            hoverMessage: ruleInfo ? new vscode.MarkdownString(ruleInfo.explanation) : undefined,
+            hoverMessage: new vscode.MarkdownString(resolved.detail),
           })
         }
       }
@@ -262,9 +245,6 @@ async function updateDecorations(editor: vscode.TextEditor) {
     console.error('Error parsing TOML or applying decorations:', error)
     outputChannel.appendLine(`Error: ${error}`)
   }
-}
-function findRule(ruleCode: string): RuffRule | undefined {
-  return rules.find(r => r.code === ruleCode)
 }
 
 // Deactivate extension
