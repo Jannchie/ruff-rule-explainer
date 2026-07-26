@@ -1,6 +1,7 @@
 import type { RuffRule } from './rules'
 import * as toml from '@iarna/toml'
 import * as vscode from 'vscode'
+import { hintPlacement } from './placement'
 import { prefixToLinterMap, rules } from './rules'
 
 // Define decoration type
@@ -218,89 +219,32 @@ async function updateDecorations(editor: vscode.TextEditor) {
         const matches = [...lineText.matchAll(rulePattern)]
 
         for (const match of matches) {
-          if (match.index !== undefined) {
-            // Calculate position at the end of the rule code (after the closing quote)
-            const startPos = match.index + match[0].length
-            const position = new vscode.Position(i, startPos)
-
-            // Look for a comma after the rule
-            const textAfterRule = lineText.slice(Math.max(0, startPos))
-            const commaMatch = textAfterRule.match(/^\s*,/)
-            const bracketMatch = textAfterRule.match(/^\s*\]/)
-            let decorationPosition = position
-
-            // Get rule info early so it's available for all decoration paths
-            const ruleInfo = findRule(rule)
-            const linter = prefixToLinterMap.get(rule)
-
-            // If comma exists, position the decoration after it
-            if (commaMatch) {
-              const commaEndPosition = startPos + commaMatch[0].length
-              decorationPosition = new vscode.Position(i, commaEndPosition)
-
-              // Create decoration for elements with comma (non-last elements)
-              const decoration: vscode.DecorationOptions = {
-                range: new vscode.Range(decorationPosition, decorationPosition),
-                renderOptions: {
-                  after: {
-                    contentText: ruleInfo
-                      ? ` ${kebabToTitleCase(ruleInfo.name)}`
-                      : (linter ? ` ${kebabToTitleCase(linter)}` : ''),
-                  },
-                },
-                hoverMessage: ruleInfo ? new vscode.MarkdownString(ruleInfo.explanation) : undefined,
-              }
-              decorations.push(decoration)
-              continue // Skip the standard decoration creation below
-            }
-            // For single-line arrays where the rule is followed by a closing bracket
-            else if (bracketMatch) {
-              // Create a zero-width decoration by using a special marker
-              // This prevents the decoration from "swallowing" the closing bracket
-              const decoration: vscode.DecorationOptions = {
-                range: new vscode.Range(position, position),
-                renderOptions: {
-                  before: {
-                    contentText: ruleInfo
-                      ? ` ${kebabToTitleCase(ruleInfo.name)}`
-                      : (linter ? ` ${kebabToTitleCase(linter)}` : ''),
-                  },
-                },
-                hoverMessage: ruleInfo ? new vscode.MarkdownString(ruleInfo.explanation) : undefined,
-              }
-              decorations.push(decoration)
-              continue // Skip the standard decoration creation below
-            }
-
-            // This section is now only for cases that don't match the above scenarios
-            if (!ruleInfo) {
-              if (linter) {
-                const decoration: vscode.DecorationOptions = {
-                  range: new vscode.Range(decorationPosition, decorationPosition),
-                  renderOptions: {
-                    after: {
-                      contentText: ` ${kebabToTitleCase(linter)}`,
-                    },
-                  },
-                }
-                decorations.push(decoration)
-              }
-              continue
-            }
-
-            // Create decoration with rule name and hover explanation
-            const decoration: vscode.DecorationOptions = {
-              range: new vscode.Range(decorationPosition, decorationPosition),
-              renderOptions: {
-                after: {
-                  contentText: ` ${kebabToTitleCase(ruleInfo.name)}`,
-                },
-              },
-              hoverMessage: new vscode.MarkdownString(ruleInfo.explanation),
-            }
-
-            decorations.push(decoration)
+          if (match.index === undefined) {
+            continue
           }
+
+          const ruleInfo = findRule(rule)
+          const linter = prefixToLinterMap.get(rule)
+          const label = ruleInfo
+            ? kebabToTitleCase(ruleInfo.name)
+            : (linter ? kebabToTitleCase(linter) : '')
+
+          if (!label) {
+            continue
+          }
+
+          const { column, padRight } = hintPlacement(lineText, match.index + match[0].length)
+          const position = new vscode.Position(i, column)
+
+          decorations.push({
+            range: new vscode.Range(position, position),
+            renderOptions: {
+              after: {
+                contentText: padRight ? ` ${label} ` : ` ${label}`,
+              },
+            },
+            hoverMessage: ruleInfo ? new vscode.MarkdownString(ruleInfo.explanation) : undefined,
+          })
         }
       }
     }
