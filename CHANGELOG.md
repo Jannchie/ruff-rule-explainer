@@ -1,3 +1,26 @@
+## v1.6.8
+
+[v1.6.0...v1.6.8](https://github.com/Jannchie/ruff-rule-explainer/compare/v1.6.0...v1.6.8)
+
+### :adhesive_bandage: Fixes
+
+- **rules**: skip removed rules with null code so the extension activates - By [Jianqi Pan](mailto:jannchie@gmail.com) in [187b80e](https://github.com/Jannchie/ruff-rule-explainer/commit/187b80e)
+
+### :construction_worker: CI
+
+- push release tags explicitly and generate changelog with tgit - By [Jianqi Pan](mailto:jannchie@gmail.com) in [b6ce5c7](https://github.com/Jannchie/ruff-rule-explainer/commit/b6ce5c7)
+- type-check before packaging - By [Jianqi Pan](mailto:jannchie@gmail.com) in [15709a1](https://github.com/Jannchie/ruff-rule-explainer/commit/15709a1)
+
+### :wrench: Chores
+
+- **rules**: update rules dataset for ruff 0.16.6 - By [github-actions[bot]](mailto:41898282+github-actions[bot]@users.noreply.github.com) in [36cae81](https://github.com/Jannchie/ruff-rule-explainer/commit/36cae81)
+- **rules**: update rules dataset for ruff 0.16.5 - By [github-actions[bot]](mailto:41898282+github-actions[bot]@users.noreply.github.com) in [16b8544](https://github.com/Jannchie/ruff-rule-explainer/commit/16b8544)
+- **rules**: update rules dataset for ruff 0.16.4 - By [github-actions[bot]](mailto:41898282+github-actions[bot]@users.noreply.github.com) in [0cc9133](https://github.com/Jannchie/ruff-rule-explainer/commit/0cc9133)
+- **rules**: update rules dataset for ruff 0.16.3 - By [github-actions[bot]](mailto:41898282+github-actions[bot]@users.noreply.github.com) in [7f7097f](https://github.com/Jannchie/ruff-rule-explainer/commit/7f7097f)
+- **rules**: update rules dataset for ruff 0.16.2 - By [github-actions[bot]](mailto:41898282+github-actions[bot]@users.noreply.github.com) in [807ecab](https://github.com/Jannchie/ruff-rule-explainer/commit/807ecab)
+- **rules**: update rules dataset for ruff 0.16.1 - By [github-actions[bot]](mailto:41898282+github-actions[bot]@users.noreply.github.com) in [ddb528c](https://github.com/Jannchie/ruff-rule-explainer/commit/ddb528c)
+- **rules**: update rules dataset for ruff 0.16.0 - By [github-actions[bot]](mailto:41898282+github-actions[bot]@users.noreply.github.com) in [68c3764](https://github.com/Jannchie/ruff-rule-explainer/commit/68c3764)
+
 ## v1.6.0
 
 [v1.5.1...v1.6.0](https://github.com/Jannchie/ruff-rule-explainer/compare/v1.5.1...v1.6.0)
