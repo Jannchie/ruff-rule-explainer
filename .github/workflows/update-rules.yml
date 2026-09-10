@@ -23,6 +23,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          # tgit builds the changelog from tags and full history
+          fetch-depth: 0
 
       - uses: astral-sh/setup-uv@v5
 
@@ -61,17 +64,30 @@ jobs:
           pnpm run typecheck
           pnpm run compile
 
-      - name: Bump version, commit and tag
+      - name: Commit rules, bump version, update changelog and tag
         if: steps.diff.outputs.changed == 'true' || inputs.force_publish
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/rules.ts
+          git commit -m "chore(rules): update rules dataset for ruff $RUFF_VERSION"
           VERSION=$(npm version patch --no-git-tag-version)
           echo "VERSION=$VERSION" >> "$GITHUB_ENV"
-          git add src/rules.ts package.json
-          git commit -m "chore(rules): update rules dataset for ruff $RUFF_VERSION"
+          # tgit only writes a section for tagged commits, so tag HEAD
+          # temporarily to get the new section titled with $VERSION, then
+          # commit the changelog together with the version bump and tag that.
           git tag "$VERSION"
-          git push origin HEAD --follow-tags
+          uvx tgit changelog -o CHANGELOG.md
+          git tag -d "$VERSION"
+          git add CHANGELOG.md package.json
+          git commit -m "version: $VERSION"
+          git tag "$VERSION"
+          # --follow-tags skips lightweight tags, so push the tag explicitly
+          git push origin HEAD "$VERSION"
+
+      - name: Extract release notes
+        if: steps.diff.outputs.changed == 'true' || inputs.force_publish
+        run: awk '/^## /{n++} n==1' CHANGELOG.md > release-notes.md
 
       - name: Package extension
         if: steps.diff.outputs.changed == 'true' || inputs.force_publish
@@ -85,6 +101,6 @@ jobs:
 
       - name: Create GitHub release
         if: steps.diff.outputs.changed == 'true' || inputs.force_publish
-        run: gh release create "$VERSION" ./*.vsix --title "$VERSION" --notes "Update rules dataset for ruff $RUFF_VERSION."
+        run: gh release create "$VERSION" ./*.vsix --title "$VERSION" --notes-file release-notes.md
         env:
           GH_TOKEN: ${{ github.token }}

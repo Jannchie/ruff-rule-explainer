@@ -39,8 +39,21 @@ jobs:
         env:
           VSCE_PAT: ${{ secrets.VSCE_PAT }}
 
+      - name: Extract release notes from changelog
+        if: startsWith(github.ref, 'refs/tags/')
+        # Use the CHANGELOG.md section for this tag when there is one
+        # (written by `tgit version` before tagging); otherwise let GitHub
+        # generate notes from the commits.
+        run: |
+          awk '/^## /{n++} n==1' CHANGELOG.md > release-notes.md
+          if head -n 1 release-notes.md | grep -qx "## $GITHUB_REF_NAME"; then
+            echo "NOTES_ARGS=--notes-file release-notes.md" >> "$GITHUB_ENV"
+          else
+            echo "NOTES_ARGS=--generate-notes" >> "$GITHUB_ENV"
+          fi
+
       - name: Attach VSIX to GitHub Release
         if: startsWith(github.ref, 'refs/tags/')
-        run: gh release create "$GITHUB_REF_NAME" extension.vsix --generate-notes || gh release upload "$GITHUB_REF_NAME" extension.vsix --clobber
+        run: gh release create "$GITHUB_REF_NAME" extension.vsix $NOTES_ARGS || gh release upload "$GITHUB_REF_NAME" extension.vsix --clobber
         env:
           GH_TOKEN: ${{ github.token }}
