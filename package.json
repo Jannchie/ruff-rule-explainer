@@ -54,8 +54,9 @@
     "publish": "pnpm vsce publish --no-dependencies",
     "compile": "node build.js",
     "watch": "tsc -watch -p ./",
-    "pretest": "pnpm run compile && pnpm run lint",
+    "pretest": "pnpm run compile && pnpm run lint && pnpm run typecheck",
     "lint": "eslint src",
+    "typecheck": "tsc --noEmit -p ./",
     "test": "vscode-test"
   },
   "dependencies": {

@@ -28,6 +28,8 @@ jobs:
 
       - run: pnpm run lint
 
+      - run: pnpm run typecheck
+
       - name: Package
         run: pnpm dlx @vscode/vsce@3.9.2 package --no-dependencies -o extension.vsix
 

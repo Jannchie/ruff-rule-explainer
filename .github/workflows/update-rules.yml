@@ -58,6 +58,7 @@ jobs:
         if: steps.diff.outputs.changed == 'true' || inputs.force_publish
         run: |
           pnpm run lint
+          pnpm run typecheck
           pnpm run compile
 
       - name: Bump version, commit and tag
