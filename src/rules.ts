@@ -11778,28 +11778,5 @@ export const rules: RuffRule[] = [
     "fix": "Fix is not available.",
     "explanation": "## What it does\nChecks for excessive logging of exception objects.\n\n## Why is this bad?\nWhen logging exceptions via `logging.exception`, the exception object\nis logged automatically. Including the exception object in the log\nmessage is redundant and can lead to excessive logging.\n\n## Example\n```python\ntry:\n    ...\nexcept ValueError as e:\n    logger.exception(f\"Found an error: {e}\")\n```\n\nUse instead:\n```python\ntry:\n    ...\nexcept ValueError:\n    logger.exception(\"Found an error\")\n```\n\n## Options\n\n- `lint.logger-objects`\n",
     "preview": false
-  },
-  {
-    "name": "pytest-fixture-autouse",
-    "code": null,
-    "linter": null,
-    "summary": "Avoid using `autouse=True` in `pytest.fixture` decorators",
-    "message_formats": [
-      "Avoid using `autouse=True` in `pytest.fixture` decorators"
-    ],
-    "fix": "Fix is not available.",
-    "explanation": "## What it does\nChecks for `pytest` fixtures that set the parameter `autouse=True` in the decorator constructor.\n\n## Why is this bad?\nAutouse fixtures are run implicitly, which can make test behavior hard to\nreason about in general, but especially when defined in `conftest.py` files.\nAutouse fixtures in `conftest.py` files are automatically run for\nall tests in the directory structure, which can introduce hidden side effects,\nmake test suites slower, and make debugging difficult.\n\nInstead, prefer to explicitly request/inject fixtures in tests, test classes,\nor other fixtures that need them by declaring them in the function parameters.\n\n## Example\n\n```python\nimport pytest\n\n\n@pytest.fixture(autouse=True)\ndef my_fixture(): ...\n```\n\nUse instead:\n\n```python\nimport pytest\n\n\n@pytest.fixture()\ndef my_fixture(): ...\n\n\ndef test_foo(my_fixture): ...\n```\n\n## Note\n\nThis is a pedantic rule that restricts a valid `pytest` pattern. If you choose to\nenable it, you may want to ignore it outside of `conftest.py` files,\nas autouse fixtures are most problematic when defined globally.\n\nYou can do this by configuring [`lint.per-file-ignores`][lint.per-file-ignores]:\n\n```toml\n[tool.ruff.lint.per-file-ignores]\n\"!**/conftest.py\" = [\"pytest-fixture-autouse\"]\n```\n\n## References\n- [`pytest` documentation: Sharing fixtures across classes, modules, packages or session](https://docs.pytest.org/en/stable/how-to/fixtures.html#scope-sharing-fixtures-across-classes-modules-packages-or-session)\n- [`pytest` documentation: Fixtures can request other fixtures](https://docs.pytest.org/en/stable/how-to/fixtures.html#fixtures-can-request-other-fixtures)\n",
-    "preview": true
   }
 ]
-
-export const prefixToLinterMap = rules.reduce((map, rule) => {
-  const match = rule.code.match(/^[A-Z]+/)
-  if (match) {
-    const prefix = match[0]
-    if (!map.has(prefix)) {
-      map.set(prefix, rule.linter)
-    }
-  }
-  return map
-}, new Map<string, string>())

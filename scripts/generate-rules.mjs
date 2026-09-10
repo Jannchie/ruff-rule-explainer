@@ -20,7 +20,10 @@ const ruffVersion = execFileSync('uvx', ['ruff', '--version'], {
 
 const allRules = JSON.parse(raw)
 
-const rules = allRules.map(rule => ({
+// Rules that ruff has removed stay in `ruff rule --all` but with a null code
+// (and linter). They cannot be selected in a config, and a null code crashes
+// anything that treats `code` as a string, so they are dropped here.
+const rules = allRules.filter(rule => typeof rule.code === 'string').map(rule => ({
   name: rule.name,
   code: rule.code,
   linter: rule.linter,
@@ -46,20 +49,6 @@ export interface RuffRule {
 
 export const rules: RuffRule[] = `
 
-const footer = `
+writeFileSync(join(root, 'src', 'rules.ts'), `${header + JSON.stringify(rules, null, 2)}\n`)
 
-export const prefixToLinterMap = rules.reduce((map, rule) => {
-  const match = rule.code.match(/^[A-Z]+/)
-  if (match) {
-    const prefix = match[0]
-    if (!map.has(prefix)) {
-      map.set(prefix, rule.linter)
-    }
-  }
-  return map
-}, new Map<string, string>())
-`
-
-writeFileSync(join(root, 'src', 'rules.ts'), header + JSON.stringify(rules, null, 2) + footer)
-
-console.log(`Generated src/rules.ts: ${rules.length} rules from ruff ${ruffVersion}`)
+console.log(`Generated src/rules.ts: ${rules.length} rules from ruff ${ruffVersion} (${allRules.length - rules.length} removed rules skipped)`)
