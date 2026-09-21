@@ -1,3 +1,11 @@
+## v1.6.10
+
+v1.6.9...v1.6.10
+
+### :wrench: Chores
+
+- **rules**: update rules dataset for ruff 0.16.8 - By [github-actions[bot]](mailto:41898282+github-actions[bot]@users.noreply.github.com) in 5ae3233
+
 ## v1.6.9
 
 v1.6.0...v1.6.9
