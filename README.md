@@ -5,8 +5,8 @@
 <h1 align="center">Ruff Rule Explainer</h1>
 
 <p align="center">
-  <a href="https://marketplace.visualstudio.com/items?itemName=jannchie.ruff-ignore-explainer"><img src="https://img.shields.io/visual-studio-marketplace/v/jannchie.ruff-ignore-explainer?label=marketplace" alt="Marketplace version"></a>
-  <a href="https://marketplace.visualstudio.com/items?itemName=jannchie.ruff-ignore-explainer"><img src="https://img.shields.io/visual-studio-marketplace/i/jannchie.ruff-ignore-explainer" alt="Installs"></a>
+  <a href="https://marketplace.visualstudio.com/items?itemName=jannchie.ruff-ignore-explainer"><img src="https://vsmarketplacebadges.dev/version-short/jannchie.ruff-ignore-explainer.svg?label=marketplace" alt="Marketplace version"></a>
+  <a href="https://marketplace.visualstudio.com/items?itemName=jannchie.ruff-ignore-explainer"><img src="https://vsmarketplacebadges.dev/installs-short/jannchie.ruff-ignore-explainer.svg" alt="Installs"></a>
   <a href="https://github.com/Jannchie/ruff-rule-explainer/actions/workflows/update-rules.yml"><img src="https://img.shields.io/github/actions/workflow/status/Jannchie/ruff-rule-explainer/update-rules.yml?label=rules%20sync" alt="Rules sync"></a>
   <a href="./LICENSE"><img src="https://img.shields.io/github/license/Jannchie/ruff-rule-explainer" alt="License"></a>
 </p>
