@@ -1,3 +1,16 @@
+## v1.6.12
+
+v1.6.11...v1.6.12
+
+### :memo: Documentation
+
+- switch Marketplace badges to vsmarketplacebadges.dev - By [Jianqi Pan](mailto:jannchie@gmail.com) in 73b0f03
+- rewrite README with badges and usage guide - By [Jianqi Pan](mailto:jannchie@gmail.com) in 9c41df0
+
+### :wrench: Chores
+
+- **rules**: update rules dataset for ruff 0.16.10 - By [github-actions[bot]](mailto:41898282+github-actions[bot]@users.noreply.github.com) in 73bd9fd
+
 ## v1.6.11
 
 v1.6.10...v1.6.11
