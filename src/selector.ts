@@ -6,7 +6,7 @@ export interface ResolvedSelector {
   label: string
   /** Markdown shown on hover */
   detail: string
-  /** Set only when the selector is a complete rule code */
+  /** Set only when the selector is a complete rule code/name */
   rule?: RuffRule
 }
 
@@ -17,6 +17,7 @@ const CODE_PATTERN = /^([A-Z]+)(\d*)$/
 const HOVER_RULE_LIMIT = 25
 
 const rulesByCode = new Map(rules.map(rule => [rule.code, rule]))
+const rulesByName = new Map(rules.map(rule => [rule.name, rule]))
 
 export function kebabToTitleCase(str: string): string {
   return str
@@ -42,13 +43,17 @@ function ruleListMarkdown(matches: RuffRule[]): string {
 /**
  * Resolve a Ruff rule selector as written in a config array.
  *
- * Ruff accepts complete codes (`E501`), linter prefixes (`E`, `PL`) and partial
+ * Ruff accepts complete codes (`E501`), rule names (`line-too-long`), linter prefixes (`E`, `PL`) and partial
  * codes (`E4`, `PLR09`), so a plain `startsWith` is wrong in both directions: it
  * misses `E4`, and it makes `E` swallow unrelated linters like `ERA` and `EXE`.
  * The alphabetic part is therefore compared exactly and only the numeric part is
  * treated as a prefix.
  */
 export function resolveSelector(selector: string): ResolvedSelector | undefined {
+  const byName = rulesByName.get(selector)
+  if (byName) {
+    return { label: byName.code, detail: byName.explanation, rule: byName }
+  }
   const exact = rulesByCode.get(selector)
   if (exact) {
     return { label: kebabToTitleCase(exact.name), detail: exact.explanation, rule: exact }
