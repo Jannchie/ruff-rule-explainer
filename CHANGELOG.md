@@ -1,3 +1,11 @@
+## v1.7.0
+
+[v1.6.15...v1.7.0](https://github.com/Jannchie/ruff-rule-explainer/compare/v1.6.15...v1.7.0)
+
+### :sparkles: Features
+
+- add rule names support (#6) - By [Anton Petrov](mailto:63284142+Psychosoc1al@users.noreply.github.com) in [494f046](https://github.com/Jannchie/ruff-rule-explainer/commit/494f046)
+
 ## v1.6.15
 
 v1.6.14...v1.6.15
