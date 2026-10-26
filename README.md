@@ -15,7 +15,7 @@
   <img src="./assets/image.png" alt="Inline rule names and hover docs in pyproject.toml" width="720">
 </p>
 
-Ruff Rule Explainer shows what each code in your Ruff config means, right in `pyproject.toml` / `ruff.toml`. `"BLE001"` gets an inline `(Blind Except)` hint, and hovering it opens Ruff's full rule docs — no more switching to the website to remember what you ignored six months ago.
+Ruff Rule Explainer shows what each code or rule name in your Ruff config means, right in `pyproject.toml` / `ruff.toml`. `"BLE001"` gets an inline `(Blind Except)` hint, and hovering it opens Ruff's full rule docs — no more switching to the website to remember what you ignored six months ago.
 
 The rule dataset is generated from `ruff rule --all` and refreshed weekly, so new Ruff rules show up without waiting for a manual release.
 
@@ -44,6 +44,7 @@ ignore = ["D" (Pydocstyle)]
 The text in parentheses is rendered by the extension, not written in the file.
 
 - **Full codes** (`B008`) show the rule name inline; hover for the What it does / Why is this bad / Example docs.
+- **Rule names** (`blind-except`) show the rule code inline (`BLE001`); hover opens the rule docs.
 - **Prefixes** (`E`, `E4`, `PLR09`, `PL`) show the linter name; hover lists the matching rules. `E` matches pycodestyle only, not `ERA` or `EXE`.
 - **`ALL`** is recognized too.
 
@@ -51,9 +52,9 @@ Recognized keys, both at the top level and under `lint`: `select`, `ignore`, `ex
 
 ## Settings
 
-| Setting | Default | Description |
-| --- | --- | --- |
-| `ruffRulesExplainer.showDecorations` | `true` | Show inline rule names. Set to `false` to keep only hover docs. |
+| Setting                              | Default | Description                                                              |
+| ------------------------------------ | ------- | ------------------------------------------------------------------------ |
+| `ruffRulesExplainer.showDecorations` | `true`  | Show inline rule names or codes. Set to `false` to keep only hover docs. |
 
 ## License
 

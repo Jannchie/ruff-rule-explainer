@@ -29,12 +29,12 @@ export function activate(context: vscode.ExtensionContext) {
   ], {
     provideHover(document, position, _token) {
       // Get the word under cursor
-      const range = document.getWordRangeAtPosition(position, /["'][A-Z0-9]+["']/)
+      const range = document.getWordRangeAtPosition(position, /["'][a-z0-9-]+["']/i)
       if (!range) {
         return null
       }
 
-      // Extract the rule code from the text (removing quotes)
+      // Extract the rule code/name from the text (removing quotes)
       const text = document.getText(range)
       const selector = text.replaceAll(/["']/g, '')
 
@@ -192,7 +192,7 @@ async function updateDecorations(editor: vscode.TextEditor) {
 
     // For each selector in the combined list, find ALL occurrences in the document
     for (const selector of allRules) {
-      if (typeof selector !== 'string' || !/^[A-Z]+\d*$/.test(selector)) {
+      if (typeof selector !== 'string') {
         continue
       }
 
